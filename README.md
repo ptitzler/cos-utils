@@ -13,6 +13,15 @@ $ cd cos-uploader
 $ pip install -r requirements.txt
 ```
 
+Set the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`environment variables 
+based on your Cloud Object Storage HMAC credentials.
+```
+$ export AWS_ACCESS_KEY_ID=...
+$ export AWS_SECRET_ACCESS_KEY=...
+```
+
+The help lists required and optional parameters. The examples listed below explain them in detail.
+
 ```
 $ python upload_data.py --help
 usage: upload_data.py [-h] [-p PREFIX] [-r] [-s] [-w] bucket source
@@ -30,6 +39,9 @@ optional arguments:
   -r, --recursive       Include files in subdirectories
   -s, --squash          Exclude subdirectory name from key name
   -w, --wipe            Clear bucket prior to upload
+
+Environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY must be
+defined to run the utility.
 ```
 
 ## Example scenario

@@ -68,8 +68,6 @@ class COSWrapper:
             # verify connectitivy by sending a dummy request
             self.get_bucket_list(1)
         except Exception as ex:
-            print('Exception type: {}'.format(type(ex)))
-            print('Exception: {}'.format(ex))
             raise COSWrapperError(ex)
 
     def get_bucket_list(self,
@@ -100,8 +98,6 @@ class COSWrapper:
                 bucket_list.append(bucket.name)
             return bucket_list
         except Exception as ex:
-            print('Exception type: {}'.format(type(ex)))
-            print('Exception: {}'.format(ex))
             raise COSWrapperError(ex)
 
     def create_bucket(self,
@@ -135,9 +131,9 @@ class COSWrapper:
 
             return True
         except ClientError as ce:
-            print('Exception type: {}'.format(type(ce)))
-            print('Exception: {}'.format(ce))
-            print('Response: ', ce.response)
+            # print('Exception type: {}'.format(type(ce)))
+            # print('Exception: {}'.format(ce))
+            # print('Response: ', ce.response)
             if ce.response.get('Error', {}).get('Code') == '400' or \
                ce.response.get('Error', {}).get('Code') == 'InvalidBucketName':
                 raise ValueError('"{}" is not a valid bucket name.'
@@ -159,12 +155,12 @@ class COSWrapper:
                 except ValueError:
                     raise
                 except Exception as ex:
-                    print('Exception type: {}'.format(type(ex)))
-                    print('Exception: {}'.format(ex))
+                    # print('Exception type: {}'.format(type(ex)))
+                    # print('Exception: {}'.format(ex))
                     raise COSWrapperError(ex)
         except Exception as ex:
-            print('Exception type: {}'.format(type(ex)))
-            print('Exception: {}'.format(ex))
+            # print('Exception type: {}'.format(type(ex)))
+            # print('Exception: {}'.format(ex))
             raise COSWrapperError(ex)
 
     def clear_bucket(self,
@@ -194,8 +190,8 @@ class COSWrapper:
         except ValueError:
             raise
         except Exception as ex:
-            print('Exception type: {}'.format(type(ex)))
-            print('Exception: {}'.format(ex))
+            # print('Exception type: {}'.format(type(ex)))
+            # print('Exception: {}'.format(ex))
             raise COSWrapperError(ex)
 
     def is_bucket_empty(self,
@@ -229,9 +225,9 @@ class COSWrapper:
             print('is_bucket_empty returns {}'.format(is_empty))
             return(is_empty)
         except ClientError as ce:
-            print('Exception type: {}'.format(type(ce)))
-            print('Exception: {}'.format(ce))
-            print('Response: ', ce.response)
+            # print('Exception type: {}'.format(type(ce)))
+            # print('Exception: {}'.format(ce))
+            # print('Response: ', ce.response)
             if ce.response.get('Error', {}).get('Code') == '400' or \
                ce.response.get('Error', {}).get('Code') == 'NoSuchBucket':
                 raise BucketNotFoundError('Bucket {} was not found'
@@ -244,8 +240,8 @@ class COSWrapper:
             print(' Response: ', ce.response)
             raise COSWrapperError(ce)
         except Exception as ex:
-            print('Exception type: {}'.format(type(ex)))
-            print('Exception: {}'.format(ex))
+            # print('Exception type: {}'.format(type(ex)))
+            # print('Exception: {}'.format(ex))
             raise COSWrapperError(ex)
 
     def get_object_list(self,
@@ -282,9 +278,9 @@ class COSWrapper:
             return object_list
 
         except ClientError as ce:
-            print('Exception type: {}'.format(type(ce)))
-            print('Exception: {}'.format(ce))
-            print('Response: ', ce.response)
+            # print('Exception type: {}'.format(type(ce)))
+            # print('Exception: {}'.format(ce))
+            # print('Response: ', ce.response)
             if ce.response.get('Error', {}).get('Code') == '404' or \
                ce.response.get('Error', {}).get('Code') == 'NoSuchBucket':
                 raise BucketNotFoundError('Bucket "{}" was not found'
@@ -296,8 +292,8 @@ class COSWrapper:
                                  .format(bucket_name))
             raise COSWrapperError(ce)
         except Exception as ex:
-            print('Exception type: {}'.format(type(ex)))
-            print('Exception: {}'.format(ex))
+            # print('Exception type: {}'.format(type(ex)))
+            # print('Exception: {}'.format(ex))
             raise COSWrapperError(ex)
 
     def upload_object(self,
@@ -337,9 +333,9 @@ class COSWrapper:
         except FileNotFoundError:
             raise
         except ClientError as ce:
-            print('Exception type: {}'.format(type(ce)))
-            print('Exception: {}'.format(ce))
-            print('Response: ', ce.response)
+            # print('Exception type: {}'.format(type(ce)))
+            # print('Exception: {}'.format(ce))
+            # print('Response: ', ce.response)
             if ce.response.get('Error', {}).get('Code') == '404' or \
                ce.response.get('Error', {}).get('Code') == 'NoSuchBucket':
                 raise BucketNotFoundError('Bucket "{}" was not found'
@@ -351,8 +347,8 @@ class COSWrapper:
                                  .format(bucket_name))
             raise COSWrapperError(ce)
         except Exception as ex:
-            print('Exception type: {}'.format(type(ex)))
-            print('Exception: {}'.format(ex))
+            # print('Exception type: {}'.format(type(ex)))
+            # print('Exception: {}'.format(ex))
             raise COSWrapperError(ex)
 
     def delete_objects(self,
@@ -386,9 +382,9 @@ class COSWrapper:
                     keys = []
 
         except ClientError as ce:
-            print('Exception type: {}'.format(type(ce)))
-            print('Exception: {}'.format(ce))
-            print('Response: ', ce.response)
+            # print('Exception type: {}'.format(type(ce)))
+            # print('Exception: {}'.format(ce))
+            # print('Response: ', ce.response)
             if ce.response.get('Error', {}).get('Code') == '404' or \
                ce.response.get('Error', {}).get('Code') == 'NoSuchBucket':
                 raise BucketNotFoundError('Bucket "{}" was not found'
@@ -400,8 +396,8 @@ class COSWrapper:
                                  .format(bucket_name))
             raise COSWrapperError(ce)
         except Exception as ex:
-            print('Exception type: {}'.format(type(ex)))
-            print('Exception: {}'.format(ex))
+            # print('Exception type: {}'.format(type(ex)))
+            # print('Exception: {}'.format(ex))
             raise COSWrapperError(ex)
 
     def delete_object(self,

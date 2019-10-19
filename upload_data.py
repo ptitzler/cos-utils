@@ -15,6 +15,12 @@
 # limitations under the License.
 #
 
+#
+# This utility uploads one or more files to an existing bucket in
+# a Cloud Object Storage instance on IBM Cloud.
+#
+
+
 import argparse
 import glob
 import os
@@ -23,6 +29,10 @@ import sys
 from pathlib import Path
 
 from utils.cos import COSWrapper, COSWrapperError
+
+
+class UploadError(Exception):
+    pass
 
 
 def do_upload(bucket,
@@ -34,20 +44,56 @@ def do_upload(bucket,
               squash=False,
               recursive=False,
               verbose=False):
+    """
+    Uploads the file(s) identified by source_spec to
+    the specified Cloud Object Storage bucket.
+
+    :param bucket: Target bucket name.
+    :type bucket: str
+    :param source_spec: Identifies a file, multiple files
+    or a directory in the local file system.
+    :type source_spec: str
+    :param access_key_id: HMAC access key id
+    :type access_key_id: str
+    :param secret_access_key: HMAC secret access key
+    :type secret_access_key: str
+    :param prefix: prefix to be added to file name when
+    the object key is generated, defaults to None
+    :type prefix: str, optional
+    :param wipe: remove objects from bucket before upload,
+    defaults to False
+    :type wipe: bool, optional
+    :param squash: exclude path information from object key,
+    defaults to False
+    :type squash: bool, optional
+    :param recursive: include files in subdirectories,
+    defaults to False
+    :type recursive: bool, optional
+    :param verbose: print diagnostic information, defaults to False
+    :type verbose: bool, optional
+    :raises ValueError: A required parameter value is missing.
+    :raises UploadError: Upload failed due to the specified reason.
+    """
+
+    if not bucket:
+        raise ValueError('Parameter "bucket" is required')
+
+    if not source_spec:
+        raise ValueError('Parameter "source_spec" is required')
 
     if not access_key_id:
-        raise ValueError('access_key_id is required')
+        raise ValueError('Parameter "access_key_id" is required')
 
     if not secret_access_key:
-        raise ValueError('access_key_id is required')
+        raise ValueError('Parameter "secret_access_key" is required')
 
     try:
         # instantiate Cloud Object Storage wrapper
         cw = COSWrapper(access_key_id,
                         secret_access_key)
     except COSWrapperError as cwe:
-        print('Error. Cannot access Cloud Object Storage: {}'.format(cwe))
-        sys.exit(1)
+        raise UploadError('Cannot access Cloud Object Storage: {}'
+                          .format(cwe))
 
     # remove all objects from the specified bucket
     try:
@@ -56,9 +102,8 @@ def do_upload(bucket,
                 print('Clearing bucket "{}" ...'.format(bucket))
             cw.clear_bucket(bucket)
     except Exception as ex:
-        print('Error. Clearing of bucket "{}" failed: {}'
-              .format(bucket, ex))
-        sys.exit(1)
+        raise UploadError('Clearing of bucket "{}" failed: {}'
+                          .format(bucket, ex))
 
     # upload source
     try:
@@ -123,43 +168,64 @@ def do_upload(bucket,
                              bucket,
                              key)
     except Exception as ex:
-        print('Error. Upload to bucket "{}" failed: {}'
-              .format(bucket, ex))
+        raise UploadError('Upload to bucket "{}" failed: {}'
+                          .format(bucket, ex))
+
+
+if __name__ == '__main__':
+    # run utility from command line
+
+    epilog_msg = 'Environment variables AWS_ACCESS_KEY_ID and ' \
+                 'AWS_SECRET_ACCESS_KEY must be defined to run the utility.'
+
+    parser = argparse.ArgumentParser(description='Upload files to a '
+                                                 'Cloud Object '
+                                                 'Storage bucket.',
+                                     epilog=epilog_msg)
+    parser.add_argument('bucket',
+                        help='Bucket name')
+    parser.add_argument('source',
+                        help='File or directory')
+    parser.add_argument('-p',
+                        '--prefix',
+                        help='Key name prefix')
+    parser.add_argument('-r',
+                        '--recursive',
+                        help='Include files in subdirectories',
+                        action='store_true')
+    parser.add_argument('-s',
+                        '--squash',
+                        help='Exclude subdirectory name from key name',
+                        action='store_true')
+    parser.add_argument('-w',
+                        '--wipe',
+                        help='Clear bucket prior to upload',
+                        action='store_true')
+
+    # parse command line parameters
+    args = parser.parse_args()
+
+    # verify that the required environment variables are set
+    # - AWS_ACCESS_KEY_ID
+    # - AWS_SECRET_ACCESS_KEY
+    if (os.environ.get('AWS_ACCESS_KEY_ID') is None) or \
+       (os.environ.get('AWS_SECRET_ACCESS_KEY') is None):
+        print('Error. Environment variables AWS_ACCESS_KEY_ID'
+              ' and AWS_SECRET_ACCESS_KEY must be set.')
         sys.exit(1)
 
-
-parser = argparse.ArgumentParser(description='Upload files to a Cloud Object '
-                                             'Storage bucket')
-parser.add_argument('bucket',
-                    help='Bucket name')
-parser.add_argument('source',
-                    help='File or directory')
-parser.add_argument('-p',
-                    '--prefix',
-                    help='Key name prefix')
-parser.add_argument('-r',
-                    '--recursive',
-                    help='Include files in subdirectories',
-                    action='store_true')
-parser.add_argument('-s',
-                    '--squash',
-                    help='Exclude subdirectory name from key name',
-                    action='store_true')
-parser.add_argument('-w',
-                    '--wipe',
-                    help='Clear bucket prior to upload',
-                    action='store_true')
-
-# parse command line parameters
-args = parser.parse_args()
-
-# perform upload
-do_upload(args.bucket,
-          args.source,
-          os.environ.get('AWS_ACCESS_KEY_ID'),
-          os.environ.get('AWS_SECRET_ACCESS_KEY'),
-          args.prefix,
-          args.wipe,
-          args.squash,
-          args.recursive,
-          verbose=True)
+    try:
+        # perform upload
+        do_upload(args.bucket,
+                  args.source,
+                  os.environ['AWS_ACCESS_KEY_ID'],
+                  os.environ['AWS_SECRET_ACCESS_KEY'],
+                  args.prefix,
+                  args.wipe,
+                  args.squash,
+                  args.recursive,
+                  verbose=True)
+    except Exception as ex:
+        print('Error. {}'.format(ex))
+        # exit with non-zero return code
+        sys.exit(1)
