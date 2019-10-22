@@ -3,14 +3,12 @@
 
 ## Getting started
 
-The utility requires Python 3.6 or above.
+The utility requires Python 3.6 or above. 
 
-Download the source code and install the prerequisites.
+Install the utility. (Currently only available on `test.pypi.org`) 
 
 ```
-$ git clone https://github.com/ptitzler/cos-uploader.git
-$ cd cos-uploader
-$ pip install -r requirements.txt
+$ pip install --index-url https://test.pypi.org/simple --extra-index-url https://pypi.org/simple cos-utils --upgrade
 ```
 
 Set the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`environment variables 
@@ -20,17 +18,28 @@ $ export AWS_ACCESS_KEY_ID=...
 $ export AWS_SECRET_ACCESS_KEY=...
 ```
 
+You can run the utility in a terminal window using the generated console script
+
+```
+$ upload_files --help
+```
+
+or explicitly
+
+```
+$ python -m cos_utils.upload_files --help
+```
+
 The help lists required and optional parameters. The examples listed below explain them in detail.
 
 ```
-$ python upload_data.py --help
-usage: upload_data.py [-h] [-p PREFIX] [-r] [-s] [-w] bucket source
+usage: upload_files.py [-h] [-p PREFIX] [-r] [-s] [-w] bucket source
 
 Upload files to a Cloud Object Storage bucket
 
 positional arguments:
   bucket                Bucket name
-  source                File or directory
+  source                File or directory spec
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -68,7 +77,7 @@ You can upload the content of any directory.
 ### Upload the content of `</path/to/local/directory>` to bucket `<bucket-name>`
 
 ```
-$ python upload_data.py <bucket-name> </path/to/local/directory>
+$ upload_files <bucket-name> </path/to/local/directory>
 ```
 
 Bucket `<bucket-name>` contains the following objects:
@@ -85,7 +94,7 @@ file4.txt
 Specify the optional `--wipe` parameter to clear the bucket before upload.
 
 ```
-$ python upload_data.py <bucket-name> </path/to/local/directory> --wipe
+$ upload_files <bucket-name> </path/to/local/directory> --wipe
 ```
 
 Bucket `<bucket-name>` contains the following objects:
@@ -102,7 +111,7 @@ file4.txt
 Specify the optional `--recursive` parameter include files in subdirectories.
 
 ```
-$ python upload_data.py <bucket-name> </path/to/local/directory> --wipe --recursive
+$ upload_files <bucket-name> </path/to/local/directory> --wipe --recursive
 ```
 
 Bucket `<bucket-name>` contains the following objects:
@@ -124,7 +133,7 @@ dir1/dir3/file1.png
 Specify the optional `--squash` parameter to ignore subdirectory names during object key generation.
 
 ```
-$ python upload_data.py <bucket-name> </path/to/local/directory> --wipe --recursive --squash
+$ upload_files <bucket-name> </path/to/local/directory> --wipe --recursive --squash
 ```
 
 Bucket `<bucket-name>` contains the following objects. Note that `</path/to/local/directory>` contains two files named `file1.png`. First `file1.png` is uploaded and later overwritten with the content of `dir1/dir3/file1.png`.
@@ -145,7 +154,7 @@ file1.png
 Specify the optional `--prefix <prefix>` parameter to add `<prefix>` to the object key for every file.
 
 ```
-$ python upload_data.py <bucket-name> </path/to/local/directory> --wipe --recursive --squash --prefix data
+$ upload_files <bucket-name> </path/to/local/directory> --wipe --recursive --squash --prefix data
 ```
 
 Bucket `<bucket-name>` contains the following objects:
@@ -166,7 +175,7 @@ data/file1.png
 You can upload a single file by specifying `</path/to/local/directory/filename>`.
 
 ```
-$ python upload_data.py <bucket-name> /path/to/local/directory/file1.png --wipe 
+$ upload_files <bucket-name> /path/to/local/directory/file1.png --wipe 
 ```
 
 Bucket `<bucket-name>` contains the following object:
@@ -178,7 +187,7 @@ file1.png
 You can upload multiple files by specifying a pattern `</path/to/local/directory/filename-pattern>`
 
 ```
-$ python upload_data.py <bucket-name> /path/to/local/directory/*.png --wipe 
+$ upload_files <bucket-name> /path/to/local/directory/*.png --wipe 
 ```
 
 > On Linux, Unix and MacOS wildcards need to be escaped to prevent shell expansion: `/path/to/local/directory/\*.png`.
@@ -193,7 +202,7 @@ file2.png
 Use the `--recursive` parameter to extend the search to subdirectories of `/path/to/local/directory/`.
 
 ```
-$ python upload_data.py <bucket-name> /path/to/local/directory/*.png --wipe --recursive
+$ upload_files <bucket-name> /path/to/local/directory/*.png --wipe --recursive
 ```
 
 ```
