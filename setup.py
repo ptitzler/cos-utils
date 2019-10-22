@@ -6,7 +6,7 @@ with open('README.md') as readme:
 setup(
   name='cos-utils',
   packages=['cos_utils'],
-  version='0.0.3',
+  version='0.0.4',
   license='Apache-2.0',
   description='Cloud Object Storage utility',
   long_description=README,
@@ -21,7 +21,7 @@ setup(
   ],
   entry_points={
     'console_scripts': [
-      'upload_files = cos_utils.upload_data:main'
+      'upload_files = cos_utils.upload_files:main'
     ]
   },
   classifiers=[
