@@ -28,7 +28,7 @@ import sys
 
 from pathlib import Path
 
-from utils.cos import COSWrapper, COSWrapperError
+from .cos import COSWrapper, COSWrapperError
 
 
 class UploadError(Exception):
@@ -172,8 +172,7 @@ def do_upload(bucket,
                           .format(bucket, ex))
 
 
-if __name__ == '__main__':
-    # run utility from command line
+def main():
 
     epilog_msg = 'Environment variables AWS_ACCESS_KEY_ID and ' \
                  'AWS_SECRET_ACCESS_KEY must be defined to run the utility.'
@@ -185,7 +184,7 @@ if __name__ == '__main__':
     parser.add_argument('bucket',
                         help='Bucket name')
     parser.add_argument('source',
-                        help='File or directory')
+                        help='File or directory spec')
     parser.add_argument('-p',
                         '--prefix',
                         help='Key name prefix')
@@ -229,3 +228,7 @@ if __name__ == '__main__':
         print('Error. {}'.format(ex))
         # exit with non-zero return code
         sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()
