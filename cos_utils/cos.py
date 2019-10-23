@@ -16,6 +16,7 @@
 
 import ibm_boto3
 import numbers
+import os
 
 from ibm_botocore.client import ClientError
 
@@ -421,3 +422,66 @@ class COSWrapper:
               .format(bucket_name, object_key))
 
         self.delete_objects(bucket_name, [object_key])
+
+    def download_object(self,
+                        bucket_name,
+                        object_key,
+                        target):
+        """ Download S3 Object
+            :param bucket_name: the object's bucket_name identifier
+            :type bucket_name: str
+            :param object_key: the object's key
+            :type object_key: str
+            :param target: file name (including optional path) of download
+            :type target: str
+            :returns:
+            :rtype: str
+            :raises BucketNotFoundError: bucket_name does not exist
+            :raises ValueError: bucket_name is invalid
+            :raises COSWrapperError: an error occurred
+        """
+
+        # print('{} {} {}'.format(bucket_name, object_key, target))
+
+        object = self.cos.Object(bucket_name, object_key)
+
+        try:
+
+            path = os.path.dirname(target)
+
+            if path is None or path.endswith('.') or path.endswith('..'):
+                # path references an existing directory
+                pass
+            else:
+                # try to create the target's output directory
+                os.makedirs(path, exist_ok=True)
+
+            # callback
+            def callback(transferred_bytes):
+                print('.', end='')
+
+            object.download_file(target, Callback=callback)
+
+            print()
+            return target
+        except BucketNotFoundError:
+            raise
+        except ValueError:
+            raise
+        except ClientError as ce:
+            if ce.response.get('Error', {}).get('Code') == '404' or \
+               ce.response.get('Error', {}).get('Code') == 'NoSuchBucket':
+                raise BucketNotFoundError(
+                    'Bucket {} or object key {} was not found'
+                    .format(bucket_name,
+                            object_key))
+            if ce.response.get('Error', {}).get('Code') == '403' or \
+               ce.response.get('Error', {}).get('Code') == 'AccessDenied':
+                raise ValueError('Bucket "{}" exists '
+                                 'but access is denied.'
+                                 .format(bucket_name))
+            raise COSWrapperError(ce)
+        except Exception as ex:
+            # print('Exception type: {}'.format(type(ex)))
+            # print('Exception: {}'.format(ex))
+            raise COSWrapperError(ex)

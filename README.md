@@ -1,4 +1,4 @@
-# Basic file uploader for Cloud Object Storage
+# Cloud Object Storage file upload and download utility
 
 
 ## Getting started
@@ -18,7 +18,9 @@ $ export AWS_ACCESS_KEY_ID=...
 $ export AWS_SECRET_ACCESS_KEY=...
 ```
 
-You can run the utility in a terminal window using the generated console script
+# Uploading files to a Cloud Object Storage bucket
+
+You can run the upload utility in a terminal window using the generated console script
 
 ```
 $ upload_files --help
@@ -33,9 +35,9 @@ $ python -m cos_utils.upload_files --help
 The help lists required and optional parameters. The examples listed below explain them in detail.
 
 ```
-usage: upload_files.py [-h] [-p PREFIX] [-r] [-s] [-w] bucket source
+usage: upload_files [-h] [-p PREFIX] [-r] [-s] [-w] bucket source
 
-Upload files to a Cloud Object Storage bucket
+Upload files to a Cloud Object Storage bucket.
 
 positional arguments:
   bucket                Bucket name
@@ -213,6 +215,73 @@ dir1/dir2/file7.png
 dir1/dir3/file1.png
 ```
 
-## License
+# Downloading files from a Cloud Object Storage bucket
+
+You can run the download utility in a terminal window using the generated console script
+
+```
+$ download_files --help
+```
+
+or explicitly
+
+```
+$ python -m cos_utils.dowload_files --help
+```
+
+The help lists required and optional parameters. The examples listed below explain them in detail.
+
+```
+usage: download_files [-h] [-d TARGET_DIR] bucket source
+
+Download objects from a Cloud Object Storage bucket.
+
+positional arguments:
+  bucket                Bucket name
+  source                Object key spec (supported wildcards: * and ?)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d TARGET_DIR, --target_dir TARGET_DIR
+                        Local target directory. Defaults to the current
+                        directory.
+
+Environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY must be
+defined to run the utility.
+```
+
+### Download complete bucket content
+
+You can download the complete content of a bucket to the current directory:
+
+```
+$ download_files <bucket-name> *
+```
+
+### Same as before but specify a target directory
+
+Use the `--target_dir </path/to/local/dir>` parameter to specify an existing directory where the downloaded files will be stored:
+
+```
+$ download_files <bucket-name> * -d /tmp/downloads
+```
+
+### Use wildcards to selectively download files
+
+Use the `*` (any character) and `?` (one character) wildcards to define a filter condition.
+
+#### Download only png files
+
+```
+$ download_files <bucket-name> *.png
+```
+
+### Download files that contain a certain string in their name
+
+```
+$ download_files <bucket-name> *fil*
+```
+
+# License
 
 [Apache-2.0](LICENSE)
