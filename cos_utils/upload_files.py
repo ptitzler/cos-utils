@@ -105,9 +105,12 @@ def do_upload(bucket,
         raise UploadError('Clearing of bucket "{}" failed: {}'
                           .format(bucket, ex))
 
-    # upload source
+    # upload files matching the source specification
     try:
+        file_count = 0
+
         if os.path.isdir(source_spec):
+            # source specification identifies a directory
             base_dir = source_spec.rstrip(os.path.sep)
 
             if recursive:
@@ -117,7 +120,9 @@ def do_upload(bucket,
 
             for file in Path(base_dir).glob(pattern):
                 file = str(file)
-                if os.path.isdir(file):
+
+                if not os.path.isfile(file):
+                    # can only upload files
                     continue
 
                 if squash:
@@ -137,17 +142,26 @@ def do_upload(bucket,
                 cw.upload_object(file,
                                  bucket,
                                  key)
+
+                file_count = file_count + 1
+
+            if file_count == 0:
+                raise UploadError('No files match the source specification {}'
+                                  .format(source_spec))
             return
 
+        # source specification likely identifies one or more files
         base_dir = os.path.dirname(source_spec)
         if recursive:
-            source_spec = '{}/**/{}'.format(base_dir,
-                                            os.path.basename(source_spec))
+            pattern = '{}/**/{}'.format(base_dir,
+                                        os.path.basename(source_spec))
+        else:
+            pattern = source_spec
 
-        for file in glob.iglob(source_spec,
+        for file in glob.iglob(pattern,
                                recursive=True):
-            if os.path.isdir(file):
-                # cannot upload a directory
+            if not os.path.isfile(file):
+                # can only upload files
                 continue
 
             if squash:
@@ -167,7 +181,18 @@ def do_upload(bucket,
             cw.upload_object(file,
                              bucket,
                              key)
+
+            file_count = file_count + 1
+
+        if file_count == 0:
+            raise UploadError('No files match the source specification {}'
+                              .format(source_spec))
+
+    except UploadError:
+        # bubble up
+        raise
     except Exception as ex:
+        # catch and mask exception
         raise UploadError('Upload to bucket "{}" failed: {}'
                           .format(bucket, ex))
 

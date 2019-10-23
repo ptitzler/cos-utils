@@ -6,7 +6,7 @@ with open('README.md') as readme:
 setup(
   name='cos-utils',
   packages=['cos_utils'],
-  version='0.0.4',
+  version='0.0.6',
   license='Apache-2.0',
   description='Cloud Object Storage utility',
   long_description=README,
