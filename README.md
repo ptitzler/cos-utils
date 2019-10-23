@@ -1,18 +1,32 @@
 # Cloud Object Storage file upload and download utility
 
+Table of content:
+- [Getting Started](#getting-started)
+- [Uploading files to a Cloud Object Storage bucket](#uploading-files-to-a-cloud-object-storage-bucket)
+- [Downloading files from a Cloud Object Storage bucket](#downloading-files-from-a-cloud-object-storage-bucket)
+
+---
 
 ## Getting started
 
 The utility requires Python 3.6 or above. 
 
-Install the utility. (Currently only available on `test.pypi.org`) 
+### Installation
+
+#### Install from test.pypi.org
 
 ```
 $ pip install --index-url https://test.pypi.org/simple --extra-index-url https://pypi.org/simple cos-utils --upgrade
 ```
 
-Set the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`environment variables 
-based on your Cloud Object Storage HMAC credentials.
+#### Install from source code
+
+```
+```
+
+#### Configuration
+
+Set the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`environment variables based on your Cloud Object Storage HMAC credentials.
 ```
 $ export AWS_ACCESS_KEY_ID=...
 $ export AWS_SECRET_ACCESS_KEY=...
