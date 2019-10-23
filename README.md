@@ -293,7 +293,7 @@ Use the `*` (any character) and `?` (one character) wildcards to define a filter
 $ download_files <bucket-name> *.png
 ```
 
-### Download files that contain a certain string in their name
+#### Download files that contain a certain string in their name
 
 ```
 $ download_files <bucket-name> *fil*
