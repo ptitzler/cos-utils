@@ -22,6 +22,9 @@ $ pip install --index-url https://test.pypi.org/simple --extra-index-url https:/
 #### Install from source code
 
 ```
+$ git clone https://github.com/ptitzler/cos-utils.git
+$ cd cos-utils
+$ pip install .
 ```
 
 #### Configuration
