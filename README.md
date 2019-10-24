@@ -13,16 +13,18 @@ The utility requires Python 3.6 or above.
 
 ### Installation
 
-#### Install from test.pypi.org
+You can install the utility from [PyPI](https://pypi.org/project/cos-utils) or from the [source](#install-from-source).
+
+#### Install from pypi.org
 
 ```
-$ pip install --index-url https://test.pypi.org/simple --extra-index-url https://pypi.org/simple cos-utils --upgrade
+$ pip install cos-utils --upgrade
 ```
 
 #### Install from source code
 
 ```
-$ git clone https://github.com/ptitzler/cos-utils.git
+$ git clone https://github.com/CODAIT/cos-utils.git
 $ cd cos-utils
 $ pip install .
 ```
@@ -274,6 +276,8 @@ You can download the complete content of a bucket to the current directory:
 ```
 $ download_files <bucket-name> *
 ```
+
+> On Linux, Unix and MacOS wildcards need to be escaped to prevent shell expansion: `download_files <bucket-name> \*`.
 
 ### Same as before but specify a target directory
 
