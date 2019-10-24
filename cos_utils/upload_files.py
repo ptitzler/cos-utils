@@ -73,6 +73,8 @@ def do_upload(bucket,
     :type verbose: bool, optional
     :raises ValueError: A required parameter value is missing.
     :raises UploadError: Upload failed due to the specified reason.
+    :return: Number of uploaded objects
+    :rtype: int
     """
 
     if not bucket:
@@ -188,6 +190,9 @@ def do_upload(bucket,
             raise UploadError('No files match the source specification {}'
                               .format(source_spec))
 
+        # return number of uploaded files
+        return file_count
+
     except UploadError:
         # bubble up
         raise
@@ -209,7 +214,8 @@ def main():
     parser.add_argument('bucket',
                         help='Bucket name')
     parser.add_argument('source',
-                        help='File or directory spec')
+                        help='File or directory spec '
+                             '(supported wildcards: * and ?)')
     parser.add_argument('-p',
                         '--prefix',
                         help='Key name prefix')
@@ -240,15 +246,18 @@ def main():
 
     try:
         # perform upload
-        do_upload(args.bucket,
-                  args.source,
-                  os.environ['AWS_ACCESS_KEY_ID'],
-                  os.environ['AWS_SECRET_ACCESS_KEY'],
-                  args.prefix,
-                  args.wipe,
-                  args.squash,
-                  args.recursive,
-                  verbose=True)
+        upload_count = do_upload(args.bucket,
+                                 args.source,
+                                 os.environ['AWS_ACCESS_KEY_ID'],
+                                 os.environ['AWS_SECRET_ACCESS_KEY'],
+                                 args.prefix,
+                                 args.wipe,
+                                 args.squash,
+                                 args.recursive,
+                                 verbose=True)
+
+        print('Uploaded {} file(s) to bucket "{}"'
+              .format(upload_count, args.bucket))
     except Exception as ex:
         print('Error. {}'.format(ex))
         # exit with non-zero return code

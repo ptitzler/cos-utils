@@ -58,7 +58,7 @@ Upload files to a Cloud Object Storage bucket.
 
 positional arguments:
   bucket                Bucket name
-  source                File or directory spec
+  source                File or directory spec (supported wildcards: * and ?)
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -280,7 +280,7 @@ $ download_files <bucket-name> *
 Use the `--target_dir </path/to/local/dir>` parameter to specify an existing directory where the downloaded files will be stored:
 
 ```
-$ download_files <bucket-name> * -d /tmp/downloads
+$ download_files <bucket-name> * --target_dir /tmp/downloads
 ```
 
 ### Use wildcards to selectively download files
