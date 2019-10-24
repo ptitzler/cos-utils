@@ -275,6 +275,8 @@ You can download the complete content of a bucket to the current directory:
 $ download_files <bucket-name> *
 ```
 
+> On Linux, Unix and MacOS wildcards need to be escaped to prevent shell expansion: `download_files <bucket-name> \*`.
+
 ### Same as before but specify a target directory
 
 Use the `--target_dir </path/to/local/dir>` parameter to specify an existing directory where the downloaded files will be stored:
