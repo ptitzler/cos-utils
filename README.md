@@ -29,7 +29,7 @@ $ pip install .
 
 #### Configuration
 
-Set the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`environment variables based on your Cloud Object Storage HMAC credentials.
+Set the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`environment variables based on your [Cloud Object Storage HMAC credentials](https://cloud.ibm.com/docs/services/cloud-object-storage/iam?topic=cloud-object-storage-service-credentials).
 ```
 $ export AWS_ACCESS_KEY_ID=...
 $ export AWS_SECRET_ACCESS_KEY=...
