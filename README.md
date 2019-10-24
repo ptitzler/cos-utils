@@ -13,6 +13,8 @@ The utility requires Python 3.6 or above.
 
 ### Installation
 
+You can install the utility from [PyPI](https://pypi.org/project/cos-utils) or from the [source](#install-from-source).
+
 #### Install from pypi.org
 
 ```

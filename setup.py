@@ -6,7 +6,7 @@ with open('README.md') as readme:
 setup(
   name='cos-utils',
   packages=['cos_utils'],
-  version='0.1.0',
+  version='0.0.9',
   license='Apache-2.0',
   description='Cloud Object Storage utility',
   long_description=README,
@@ -26,7 +26,7 @@ setup(
     ]
   },
   classifiers=[
-    'Development Status :: 3 - Alpha',
+    'Development Status :: 4 - Beta',
     'License :: OSI Approved :: Apache Software License',
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7'
