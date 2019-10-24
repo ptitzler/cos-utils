@@ -13,16 +13,16 @@ The utility requires Python 3.6 or above.
 
 ### Installation
 
-#### Install from test.pypi.org
+#### Install from pypi.org
 
 ```
-$ pip install --index-url https://test.pypi.org/simple --extra-index-url https://pypi.org/simple cos-utils --upgrade
+$ pip install cos-utils --upgrade
 ```
 
 #### Install from source code
 
 ```
-$ git clone https://github.com/ptitzler/cos-utils.git
+$ git clone https://github.com/CODAIT/cos-utils.git
 $ cd cos-utils
 $ pip install .
 ```
