@@ -2,6 +2,7 @@
 
 Table of content:
 - [Getting Started](#getting-started)
+- [Listing the content of a Cloud Object Storage bucket](#listing-the-content-of-a-cloud-object-storage-bucket)
 - [Uploading files to a Cloud Object Storage bucket](#uploading-files-to-a-cloud-object-storage-bucket)
 - [Downloading files from a Cloud Object Storage bucket](#downloading-files-from-a-cloud-object-storage-bucket)
 
@@ -35,6 +36,43 @@ Set the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`environment variables bas
 ```
 $ export AWS_ACCESS_KEY_ID=...
 $ export AWS_SECRET_ACCESS_KEY=...
+```
+
+# Listing the content of a Cloud Object Storage bucket
+
+You can run the list utility in a terminal window using the generated console script
+
+```
+$ list_files --help
+```
+
+or explicitly
+
+```
+$ python -m cos_utils.list_files --help
+```
+
+The help lists required and optional parameters.
+
+```
+usage: list_files [-h] bucket
+
+List the content of a Cloud Object Storage bucket.
+
+positional arguments:
+  bucket      Bucket name
+
+optional arguments:
+  -h, --help  show this help message and exit
+
+Environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY must be
+defined to run the utility.
+```
+
+Example: List the content of `<bucket-name>`
+
+```
+$ list_files <bucket-name>
 ```
 
 # Uploading files to a Cloud Object Storage bucket
