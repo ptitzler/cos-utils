@@ -182,10 +182,14 @@ class COSWrapper:
         """
 
         try:
-            # fetch object list for this bucket and bulk delete
+            # fetch object list for this bucket
+            object_list = self.get_object_list(bucket_name,
+                                               key_name_prefix)
+            # perform bulk delete
             self.delete_objects(bucket_name,
-                                self.get_object_list(bucket_name,
-                                                     key_name_prefix))
+                                object_list)
+            # return number of deleted objects
+            return len(object_list)
         except BucketNotFoundError:
             raise
         except ValueError:
