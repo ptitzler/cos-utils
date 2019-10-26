@@ -447,18 +447,29 @@ class COSWrapper:
 
         try:
 
+            if object_key.endswith('/'):
+                # the object represents a directory
+                target = target.rstrip('/')
+                # try to create it
+                os.makedirs(target, exist_ok=True)
+                # there is nothing to download; return
+                return target
+
+            # the object represents a file
+            # - create parent directories if necessary
+            # - download the file
             path = os.path.dirname(target)
 
             if path is None or path.endswith('.') or path.endswith('..'):
                 # path references an existing directory
                 pass
             else:
-                # try to create the target's output directory
+                # try to create the target's directory
                 os.makedirs(path, exist_ok=True)
 
             # callback
             def callback(transferred_bytes):
-                print('.', end='')
+                print('.', end='', flush=True)
 
             object.download_file(target, Callback=callback)
 

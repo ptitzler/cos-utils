@@ -109,29 +109,29 @@ def do_download(bucket,
 
     # download objects matching the source specification
     try:
-        file_count = 0
+        object_count = 0
 
         for object in objects:
             # apply specification to object key
             if not prog.match(object):
                 continue
 
-            target_file = str(Path(target_dir).joinpath(object))
+            target = str(Path(target_dir).joinpath(object))
 
             if verbose:
-                print('Downloading "{}" => "{}"'.format(object, target_file))
+                print('Downloading "{}" => "{}"'.format(object, target))
 
-            cw.download_object(bucket, object, target_file)
+            cw.download_object(bucket, object, target)
 
-            file_count = file_count + 1
+            object_count = object_count + 1
 
-        if file_count == 0:
+        if object_count == 0:
             raise DownloadError('No objects in bucket "{}" match the '
                                 '"{}" specification.'
                                 .format(bucket, source_spec))
 
         # return number of downloaded files
-        return file_count
+        return object_count
 
     except DownloadError:
         # bubble up

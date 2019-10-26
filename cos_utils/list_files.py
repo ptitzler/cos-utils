@@ -116,7 +116,7 @@ def main():
         for object in object_list:
             print(object)
 
-        print('Bucket "{}" contains {} files.'
+        print('Bucket "{}" contains {} object(s).'
               .format(args.bucket, len(object_list)))
     except Exception as ex:
         print('Error. {}'.format(ex))
