@@ -23,6 +23,7 @@
 
 import argparse
 import os
+import re
 import sys
 
 from .cos import COSWrapper, COSWrapperError
@@ -35,6 +36,7 @@ class ListError(Exception):
 def do_list(bucket,
             access_key_id,
             secret_access_key,
+            pattern=None,
             verbose=False):
     """
     List the content of the specified bucket.
@@ -45,7 +47,11 @@ def do_list(bucket,
     :type access_key_id: str
     :param secret_access_key: HMAC secret access key
     :type secret_access_key: str
-    :return: Objects in bucket
+    :param pattern: object key pattern to be applied, defaults to None
+    :type pattern: str, optional
+    :param verbose: [description], defaults to False
+    :type verbose: bool, optional
+    :return: Objects in bucket matching the pattern
     :rtype: list
     :raises ValueError: A required parameter value is missing.
     :raises ListError: Listing failed due to the specified reason.
@@ -70,7 +76,19 @@ def do_list(bucket,
 
     # fetch list of objects in the bucket
     try:
-        return cw.get_object_list(bucket)
+        object_list = cw.get_object_list(bucket)
+        if not pattern:
+            return object_list
+
+        # sanitize source specification
+        pattern = pattern.replace('.', '\\.')
+        pattern = pattern.replace('*', '.*')
+        pattern = pattern.replace('?', '.?')
+        pattern = '^{}$'.format(pattern)
+        # precompile pattern
+        prog = re.compile(pattern)
+        return list(filter(prog.match, object_list))
+
     except Exception as ex:
         # catch and mask exception
         raise ListError('Listing of bucket "{}" failed: {}'
@@ -89,10 +107,8 @@ def main():
     parser.add_argument('bucket',
                         help='Bucket name')
 
-    # parser.add_argument('-d',
-    #                     '--target_dir',
-    #                     help='Local target directory. '
-    #                          'Defaults to the current directory.')
+    parser.add_argument('pattern',
+                        help='Object key spec (supported wildcards: * and ?)')
 
     # parse command line parameters
     args = parser.parse_args()
@@ -111,13 +127,14 @@ def main():
         object_list = do_list(args.bucket,
                               os.environ['AWS_ACCESS_KEY_ID'],
                               os.environ['AWS_SECRET_ACCESS_KEY'],
+                              args.pattern,
                               verbose=True)
 
         for object in object_list:
             print(object)
 
-        print('Bucket "{}" contains {} object(s).'
-              .format(args.bucket, len(object_list)))
+        print('Bucket "{}" contains {} object(s) matching "{}".'
+              .format(args.bucket, len(object_list), args.pattern))
     except Exception as ex:
         print('Error. {}'.format(ex))
         # exit with non-zero return code

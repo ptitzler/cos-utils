@@ -56,12 +56,13 @@ $ python -m cos_utils.list_files --help
 The help lists required and optional parameters.
 
 ```
-usage: list_files [-h] bucket
+usage: list_files [-h] bucket pattern
 
 List the content of a Cloud Object Storage bucket.
 
 positional arguments:
   bucket      Bucket name
+  pattern     Object key spec (supported wildcards: * and ?)
 
 optional arguments:
   -h, --help  show this help message and exit
@@ -70,10 +71,22 @@ Environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY must be
 defined to run the utility.
 ```
 
-Example: List the content of `<bucket-name>`
+## List the content of `<bucket-name>`
 
 ```
-$ list_files <bucket-name>
+$ list_files <bucket-name> *
+```
+
+> On Linux, Unix and MacOS wildcards need to be escaped to prevent shell expansion: `list_files <bucket-name> \*`.
+
+## Apply a filter
+
+Use the `*` (any character) and `?` (one character) wildcards to define a filter condition.
+
+For example, to limit output to files ending in `.png`:
+
+```
+$ list_files <bucket-name> *.png
 ```
 
 # Uploading files to a Cloud Object Storage bucket
