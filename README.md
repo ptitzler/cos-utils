@@ -5,6 +5,7 @@ Table of content:
 - [Listing the content of a Cloud Object Storage bucket](#listing-the-content-of-a-cloud-object-storage-bucket)
 - [Uploading files to a Cloud Object Storage bucket](#uploading-files-to-a-cloud-object-storage-bucket)
 - [Downloading files from a Cloud Object Storage bucket](#downloading-files-from-a-cloud-object-storage-bucket)
+- [Removing files from a Cloud Object Storage bucket](#removing-files-from-a-cloud-object-storage-bucket)
 
 ---
 
@@ -55,12 +56,13 @@ $ python -m cos_utils.list_files --help
 The help lists required and optional parameters.
 
 ```
-usage: list_files [-h] bucket
+usage: list_files [-h] bucket pattern
 
 List the content of a Cloud Object Storage bucket.
 
 positional arguments:
   bucket      Bucket name
+  pattern     Object key spec (supported wildcards: * and ?)
 
 optional arguments:
   -h, --help  show this help message and exit
@@ -69,10 +71,22 @@ Environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY must be
 defined to run the utility.
 ```
 
-Example: List the content of `<bucket-name>`
+## List the content of `<bucket-name>`
 
 ```
-$ list_files <bucket-name>
+$ list_files <bucket-name> *
+```
+
+> On Linux, Unix and MacOS wildcards need to be escaped to prevent shell expansion: `list_files <bucket-name> \*`.
+
+## Apply a filter
+
+Use the `*` (any character) and `?` (one character) wildcards to define a filter condition.
+
+For example, to limit output to files ending in `.png`:
+
+```
+$ list_files <bucket-name> *.png
 ```
 
 # Uploading files to a Cloud Object Storage bucket
@@ -92,13 +106,13 @@ $ python -m cos_utils.upload_files --help
 The help lists required and optional parameters. The examples listed below explain them in detail.
 
 ```
-usage: upload_files [-h] [-p PREFIX] [-r] [-s] [-w] bucket source
+usage: upload_files [-h] [-p PREFIX] [-r] [-s] [-w] bucket pattern
 
 Upload files to a Cloud Object Storage bucket.
 
 positional arguments:
   bucket                Bucket name
-  source                File or directory spec (supported wildcards: * and ?)
+  pattern               File or directory spec (supported wildcards: * and ?)
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -289,13 +303,13 @@ $ python -m cos_utils.dowload_files --help
 The help lists required and optional parameters. The examples listed below explain them in detail.
 
 ```
-usage: download_files [-h] [-d TARGET_DIR] bucket source
+usage: download_files [-h] [-d TARGET_DIR] bucket pattern
 
 Download objects from a Cloud Object Storage bucket.
 
 positional arguments:
   bucket                Bucket name
-  source                Object key spec (supported wildcards: * and ?)
+  pattern               Object key spec (supported wildcards: * and ?)
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -339,6 +353,26 @@ $ download_files <bucket-name> *.png
 
 ```
 $ download_files <bucket-name> *fil*
+```
+
+# Removing files from a Cloud Object Storage bucket
+
+You can run the remove utility in a terminal window using the generated console script
+
+```
+$ remove_files --help
+```
+
+or explicitly
+
+```
+$ python -m cos_utils.remove_files --help
+```
+
+### Remove all files from a bucket
+
+```
+$ remove_files <bucket-name>
 ```
 
 # License

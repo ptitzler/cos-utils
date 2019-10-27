@@ -23,7 +23,8 @@ setup(
     'console_scripts': [
       'upload_files = cos_utils.upload_files:main',
       'download_files = cos_utils.download_files:main',
-      'list_files = cos_utils.list_files:main'
+      'list_files = cos_utils.list_files:main',
+      'remove_files = cos_utils.remove_files:main'
     ]
   },
   classifiers=[

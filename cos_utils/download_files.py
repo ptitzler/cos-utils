@@ -153,7 +153,7 @@ def main():
                                      epilog=epilog_msg)
     parser.add_argument('bucket',
                         help='Bucket name')
-    parser.add_argument('source',
+    parser.add_argument('pattern',
                         help='Object key spec (supported wildcards: * and ?)')
     parser.add_argument('-d',
                         '--target_dir',
@@ -175,7 +175,7 @@ def main():
     try:
         # perform download
         download_count = do_download(args.bucket,
-                                     args.source,
+                                     args.pattern,
                                      os.environ['AWS_ACCESS_KEY_ID'],
                                      os.environ['AWS_SECRET_ACCESS_KEY'],
                                      args.target_dir,

@@ -36,7 +36,7 @@ class UploadError(Exception):
 
 
 def do_upload(bucket,
-              source_spec,
+              pattern,
               access_key_id,
               secret_access_key,
               prefix=None,
@@ -45,14 +45,14 @@ def do_upload(bucket,
               recursive=False,
               verbose=False):
     """
-    Uploads the file(s) identified by source_spec to
+    Uploads the file(s) identified by pattern to
     the specified Cloud Object Storage bucket.
 
     :param bucket: Target bucket name.
     :type bucket: str
-    :param source_spec: Identifies a file, multiple files
+    :param pattern: Identifies a file, multiple files
     or a directory in the local file system.
-    :type source_spec: str
+    :type pattern: str
     :param access_key_id: HMAC access key id
     :type access_key_id: str
     :param secret_access_key: HMAC secret access key
@@ -80,8 +80,8 @@ def do_upload(bucket,
     if not bucket:
         raise ValueError('Parameter "bucket" is required')
 
-    if not source_spec:
-        raise ValueError('Parameter "source_spec" is required')
+    if not pattern:
+        raise ValueError('Parameter "pattern" is required')
 
     if not access_key_id:
         raise ValueError('Parameter "access_key_id" is required')
@@ -111,16 +111,17 @@ def do_upload(bucket,
     try:
         file_count = 0
 
-        if os.path.isdir(source_spec):
+        if os.path.isdir(pattern):
+
             # source specification identifies a directory
-            base_dir = source_spec.rstrip(os.path.sep)
+            base_dir = pattern.rstrip(os.path.sep)
 
             if recursive:
-                pattern = '**/*'
+                source_pattern = '**/*'
             else:
-                pattern = '*'
+                source_pattern = '*'
 
-            for file in Path(base_dir).glob(pattern):
+            for file in Path(base_dir).glob(source_pattern):
                 file = str(file)
 
                 if not os.path.isfile(file):
@@ -148,20 +149,22 @@ def do_upload(bucket,
                 file_count = file_count + 1
 
             if file_count == 0:
-                raise UploadError('No files match the source specification {}'
-                                  .format(source_spec))
-            return
+                raise UploadError('The directory "{}" does not contain '
+                                  'any files.'
+                                  .format(pattern))
+
+            return file_count
 
         # source specification likely identifies one or more files
-        base_dir = os.path.dirname(source_spec)
+        base_dir = os.path.dirname(pattern)
         if recursive:
-            pattern = '{}/**/{}'.format(base_dir,
-                                        os.path.basename(source_spec))
+            file_pattern = '{}/**/{}'.format(base_dir,
+                                             os.path.basename(pattern))
         else:
-            pattern = source_spec
+            file_pattern = pattern
 
-        for file in glob.iglob(pattern,
-                               recursive=True):
+        for file in glob.iglob(file_pattern,
+                               recursive=recursive):
             if not os.path.isfile(file):
                 # can only upload files
                 continue
@@ -187,8 +190,8 @@ def do_upload(bucket,
             file_count = file_count + 1
 
         if file_count == 0:
-            raise UploadError('No files match the source specification {}'
-                              .format(source_spec))
+            raise UploadError('No files match the pattern "{}"'
+                              .format(pattern))
 
         # return number of uploaded files
         return file_count
@@ -213,7 +216,7 @@ def main():
                                      epilog=epilog_msg)
     parser.add_argument('bucket',
                         help='Bucket name')
-    parser.add_argument('source',
+    parser.add_argument('pattern',
                         help='File or directory spec '
                              '(supported wildcards: * and ?)')
     parser.add_argument('-p',
@@ -247,7 +250,7 @@ def main():
     try:
         # perform upload
         upload_count = do_upload(args.bucket,
-                                 args.source,
+                                 args.pattern,
                                  os.environ['AWS_ACCESS_KEY_ID'],
                                  os.environ['AWS_SECRET_ACCESS_KEY'],
                                  args.prefix,
@@ -256,7 +259,7 @@ def main():
                                  args.recursive,
                                  verbose=True)
 
-        print('Uploaded {} file(s) to bucket "{}"'
+        print('Uploaded {} file(s) to bucket "{}".'
               .format(upload_count, args.bucket))
     except Exception as ex:
         print('Error. {}'.format(ex))

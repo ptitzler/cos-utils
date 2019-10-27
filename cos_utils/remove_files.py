@@ -16,30 +16,29 @@
 #
 
 #
-# This utility lists the content of an existing bucket in
+# This utility removes objects in an existing bucket in
 # a Cloud Object Storage instance on IBM Cloud.
 #
 
 
 import argparse
 import os
-import re
 import sys
 
 from .cos import COSWrapper, COSWrapperError
 
 
-class ListError(Exception):
+class RemoveError(Exception):
     pass
 
 
-def do_list(bucket,
-            access_key_id,
-            secret_access_key,
-            pattern=None,
-            verbose=False):
+def do_remove(bucket,
+              access_key_id,
+              secret_access_key,
+              object_spec='*',
+              verbose=False):
     """
-    List the content of the specified bucket.
+    Clear content of the specified bucket.
 
     :param bucket: Source bucket name. (Must exist)
     :type bucket: str
@@ -47,14 +46,17 @@ def do_list(bucket,
     :type access_key_id: str
     :param secret_access_key: HMAC secret access key
     :type secret_access_key: str
-    :param pattern: object key pattern to be applied, defaults to None
-    :type pattern: str, optional
+
+    :param object_spec: [description], defaults to '*'
+    :type object_spec: str, optional
     :param verbose: [description], defaults to False
     :type verbose: bool, optional
-    :return: Objects in bucket matching the pattern
-    :rtype: list
+
     :raises ValueError: A required parameter value is missing.
-    :raises ListError: Listing failed due to the specified reason.
+    :raises RemoveError: Object removal failed due to the specified reason.
+
+    :return: Number of removed objects
+    :rtype: int
     """
 
     if not bucket:
@@ -71,28 +73,16 @@ def do_list(bucket,
         cw = COSWrapper(access_key_id,
                         secret_access_key)
     except COSWrapperError as cwe:
-        raise ListError('Cannot access Cloud Object Storage: {}'
-                        .format(cwe))
+        raise RemoveError('Cannot access Cloud Object Storage: {}'
+                          .format(cwe))
 
     # fetch list of objects in the bucket
     try:
-        object_list = cw.get_object_list(bucket)
-        if not pattern:
-            return object_list
-
-        # sanitize source specification
-        pattern = pattern.replace('.', '\\.')
-        pattern = pattern.replace('*', '.*')
-        pattern = pattern.replace('?', '.?')
-        pattern = '^{}$'.format(pattern)
-        # precompile pattern
-        prog = re.compile(pattern)
-        return list(filter(prog.match, object_list))
-
+        return cw.clear_bucket(bucket)
     except Exception as ex:
         # catch and mask exception
-        raise ListError('Listing of bucket "{}" failed: {}'
-                        .format(bucket, ex))
+        raise RemoveError('Cleaning of bucket "{}" failed: {}'
+                          .format(bucket, ex))
 
 
 def main():
@@ -100,15 +90,17 @@ def main():
     epilog_msg = 'Environment variables AWS_ACCESS_KEY_ID and ' \
                  'AWS_SECRET_ACCESS_KEY must be defined to run the utility.'
 
-    parser = argparse.ArgumentParser(description='List the content of a '
+    parser = argparse.ArgumentParser(description='Remove objects from a '
                                                  'Cloud Object '
                                                  'Storage bucket.',
                                      epilog=epilog_msg)
     parser.add_argument('bucket',
                         help='Bucket name')
 
-    parser.add_argument('pattern',
-                        help='Object key spec (supported wildcards: * and ?)')
+    # parser.add_argument('-p',
+    #                     '--pattern',
+    #                     help='Object specification '
+    #                          '(supported wildcards: * and ?)')
 
     # parse command line parameters
     args = parser.parse_args()
@@ -124,17 +116,13 @@ def main():
 
     try:
         # perform listing
-        object_list = do_list(args.bucket,
-                              os.environ['AWS_ACCESS_KEY_ID'],
-                              os.environ['AWS_SECRET_ACCESS_KEY'],
-                              args.pattern,
-                              verbose=True)
+        object_count = do_remove(args.bucket,
+                                 os.environ['AWS_ACCESS_KEY_ID'],
+                                 os.environ['AWS_SECRET_ACCESS_KEY'],
+                                 verbose=True)
 
-        for object in object_list:
-            print(object)
-
-        print('Bucket "{}" contains {} object(s) matching "{}".'
-              .format(args.bucket, len(object_list), args.pattern))
+        print('Removed {} object(s) from bucket "{}".'
+              .format(object_count, args.bucket))
     except Exception as ex:
         print('Error. {}'.format(ex))
         # exit with non-zero return code
