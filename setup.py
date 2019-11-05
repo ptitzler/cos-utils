@@ -6,7 +6,7 @@ with open('README.md') as readme:
 setup(
   name='cos-utils',
   packages=['cos_utils'],
-  version='0.0.11',
+  version='0.0.12',
   license='Apache-2.0',
   description='Cloud Object Storage utility',
   long_description=README,
@@ -14,7 +14,7 @@ setup(
   author='Patrick Titzler',
   author_email='ptitzler@us.ibm.com',
   url='https://github.com/CODAIT/cos-utils',
-  keywords=['Cloud Object Storage', 'upload', 'download'],
+  keywords=['Cloud Object Storage', 'upload', 'download', 'list'],
   install_requires=[
                     'ibm-cos-sdk',
                     'requests'
@@ -24,7 +24,8 @@ setup(
       'upload_files = cos_utils.upload_files:main',
       'download_files = cos_utils.download_files:main',
       'list_files = cos_utils.list_files:main',
-      'remove_files = cos_utils.remove_files:main'
+      'remove_files = cos_utils.remove_files:main',
+      'list_buckets = cos_utils.list_buckets:main'
     ]
   },
   classifiers=[
