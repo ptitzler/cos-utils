@@ -1,6 +1,6 @@
 # Cloud Object Storage CLI
 
-[![Build Status](https://travis-ci.com/CODAIT/cos-utils.svg?branch=master)](https://travis-ci.com/CODAIT/cos-utils) [![PyPI release](https://img.shields.io/pypi/v/cos-utils.svg)](https://pypi.org/project/cos-utils/) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cos-utils)
+[![Build Status](https://travis-ci.com/CODAIT/cos-utils.svg)](https://travis-ci.com/CODAIT/cos-utils) [![PyPI release](https://img.shields.io/pypi/v/cos-utils.svg)](https://pypi.org/project/cos-utils/) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cos-utils)
 
 Table of content:
 - [Getting Started](#getting-started)
